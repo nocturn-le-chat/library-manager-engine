@@ -5,55 +5,104 @@ import npyscreen
 class Terminal(npyscreen.StandardApp):
     def onStart(self):
         self.addForm("MAIN", main_menu, name="Library search engine ver.0.1")
-        self.addForm("BOOKS", book_catalogue, name="Books cataogue")
-        self.addForm("USERS", user_catalogue, name="User cataogue")
+        self.addForm("BOOKS", book_catalog, name="Catalogs\>Books")
+        self.addForm("USERS", user_catalog, name="Catalogs\>Users")
 
 # Главное меню
 class main_menu(npyscreen.FormBaseNew):
     def create(self):
         self.add(npyscreen.FixedText, editable=False, value="===== Catalog Management ===============", relx=3, rely=3)
         books = self.add(npyscreen.ButtonPress, 
-                 name=">>>  1.Manage books catalog",
+                 name=">>>  1. Manage books catalog",
                  relx=3, rely=5)
         books.whenPressed = self.open_books
 
         users = self.add(npyscreen.ButtonPress,
-                 name=">>>  2.Manage users catalog",
+                 name=">>>  2. Manage users catalog",
                  relx=3, rely=7)
         users.whenPressed = self.open_users
 
         self.add(npyscreen.FixedText, editable=False, value="===== Extras ===========================", relx=3, rely=18)
         exit = self.add(npyscreen.ButtonPress,
-                 name=">>>  0.Exit",
+                 name=">>>  0. Exit",
                  relx=3, rely=20)
         exit.whenPressed = self.exit
 
     def open_books(self):
         self.parentApp.switchForm('BOOKS')
-
     def open_users(self):
         self.parentApp.switchForm('USERS')
     def exit(self):
         self.parentApp.switchForm(None)
 
 # Книжный каталог
-class book_catalogue(npyscreen.ActionForm):
+class book_catalog(npyscreen.FormBaseNew):
     def create(self):
-        self.add(npyscreen.TitleText,
-                 name="Books catalog",
-                 value="Nothing here!")
-    
-    def on_ok(self):
-        self.parentApp.switchForm('MAIN')
+        self.add(npyscreen.FixedText, editable=False, value="===== Books management =================", relx=3, rely=3)
+        add_button    = self.add(npyscreen.ButtonPress, 
+                                name=">>>  1. Add book",
+                                relx=3, rely=5)
+        add_button.whenPressed = self.add_book
+
+        search_button = self.add(npyscreen.ButtonPress,
+                                 name=">>>  2. Search Book",
+                                 relx=3, rely=7)
+        search_button.whenPressed = self.search_book
+
+        edit_button   = self.add(npyscreen.ButtonPress,
+                                 name=">>>  3. Edit book",
+                                 relx=3, rely=9)
+        edit_button.whenPressed = self.edit_book
+
+        delete_button = self.add(npyscreen.ButtonPress,
+                                 name=">>>  4. Delete book",
+                                 relx=3, rely=11)
+        delete_button.whenPressed = self.delete_book
+
+        self.add(npyscreen.FixedText, editable=False, value="===== Extras ===========================", relx=3, rely=18)
+        menu_button   = self.add(npyscreen.ButtonPress,
+                                 name=">>>  0. Exit to menu",
+                                 relx=3, rely=20)
+        menu_button.whenPressed = self.main_menu
+
+
+    def add_book(self):
+        pass
+    def search_book(self):
+        pass
+    def edit_book(self):
+        pass
+    def delete_book(self):
+        pass
+    def main_menu(self):
+        self.parentApp.switchForm("MAIN")
 
 # Читательский каталог
-class user_catalogue(npyscreen.ActionForm):
+class user_catalog(npyscreen.FormBaseNew):
     def create(self):
-        self.add(npyscreen.TitleText,
-                 name="Users catalog",
-                 value="Nothing here!")
-        
-    def on_ok(self):
+        self.add(npyscreen.FixedText, editable=False, value="===== Users management =================", relx=3, rely=3)
+        search_button = self.add(npyscreen.ButtonPress,
+                                 name=">>>  1. Search user",
+                                 relx=3, rely=5)
+        search_button.whenPressed = self.search_user
+
+        delete_button = self.add(npyscreen.ButtonPress,
+                                 name=">>>  2. Ban user",
+                                 relx=3, rely=7)
+        delete_button.whenPressed = self.ban_user
+
+        self.add(npyscreen.FixedText, editable=False, value="===== Extras ===========================", relx=3, rely=18)
+        menu_button   = self.add(npyscreen.ButtonPress,
+                                 name=">>>  0. Exit to menu",
+                                 relx=3, rely=20)
+        menu_button.whenPressed = self.main_menu
+
+
+    def search_user(self):
+        pass
+    def ban_user(self):
+        pass
+    def main_menu(self):
         self.parentApp.switchForm("MAIN")
 
 ## Подготовительные процессы и запуск
