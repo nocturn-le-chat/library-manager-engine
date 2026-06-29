@@ -469,7 +469,7 @@ class search_user(npyscreen.FormBaseNew):
     def back(self):
         global search_flag
         search_flag = False
-        self.parentApp.switchForm("BOOKS")
+        self.parentApp.switchForm("USERS")
 
 class ban_user(npyscreen.FormBaseNew):
     def create(self):
@@ -493,7 +493,7 @@ class ban_user(npyscreen.FormBaseNew):
     def back(self):
         global delete_flag
         delete_flag = False
-        self.parentApp.switchForm("BOOKS")
+        self.parentApp.switchForm("USERS")
 
     def afterEditing(self):
         global delete_flag
