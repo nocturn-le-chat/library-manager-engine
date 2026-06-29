@@ -214,8 +214,8 @@ class search_book(npyscreen.FormBaseNew):
                 self.add(npyscreen.FixedText, value="Can search by only ID or only by paramethers", relx=50, rely=3)
                 self.display()
             if id != "":
-                global id_s
-                if id in id_s:
+                global book_ids
+                if id in book_ids:
                     book = load(open("book_database.json"))[id]
                     self.add(npyscreen.FixedText, value=str(book), relx=50, rely=3)
                     self.display()
@@ -300,7 +300,7 @@ class edit_book(npyscreen.FormBaseNew):
             elif not (id!="" and any([k!="" for k in [genre, author, title, year]])):
                 self.add(npyscreen.FixedText, value="Missing editable book index or edited paramethers", relx=50, rely=3)
                 self.display()
-            elif not id in id_s:
+            elif not id in book_ids:
                 self.add(npyscreen.FixedText, value="No such book", relx=50, rely=3)
                 self.display()
             else:
@@ -346,13 +346,16 @@ class delete_book(npyscreen.FormBaseNew):
         global delete_flag
         if delete_flag:
             id = self.id_field.value.strip()
-            if id=="":
+            if not path.exists("book_database.json"):
+                self.add(npyscreen.FixedText, editable=False, value="Empty catalog", relx=3, rely=15)
+                self.display()
+            elif id=="":
                 self.add(npyscreen.FixedText, editable=False, value="Empty ID", relx=3, rely=15)
                 self.display()
             elif not id.isnumerical() or int(id)<1:
                 self.add(npyscreen.FixedText, editable=False, value="Incorrect ID", relx=3, rely=15)
                 self.display()
-            elif not id in id_s:
+            elif not id in book_ids:
                 self.add(npyscreen.FixedText, editable=False, value="ID doesn't exist", relx=3, rely=15)
                 self.display()
             else:
@@ -390,26 +393,156 @@ class user_catalog(npyscreen.FormBaseNew):
         self.parentApp.switchForm("MAIN")
 
 class search_user(npyscreen.FormBaseNew):
-    pass
+    def create(self):
+        self.add(npyscreen.FixedText, editable=False, value="===== ID search ========================", relx=3, rely=3)
+        self.id_field     = self.add(npyscreen.TitleText,
+                                     name="ID:       >>> ", relx=3, rely=5)
+        
+        self.add(npyscreen.FixedText, editable=False, value="===== Paramether search ================", relx=3, rely=7)
+        self.first_field   = self.add(npyscreen.TitleText,
+                                      name="First name:    >>> ", relx=3, rely=9)
+        self.last_field    = self.add(npyscreen.TitleText,
+                                      name="Last name:   >>> ", relx=3, rely=11)
+        submit_button      = self.add(npyscreen.ButtonPress,
+                                      name=">>>  9. Search", relx=3 ,rely=17)
+        submit_button.whenPressed = self.on_submit
+        
+        self.add(npyscreen.FixedText, editable=False, value="===== Extras ===========================", relx=3, rely=18)
+        back_button        = self.add(npyscreen.ButtonPress,
+                                      name=">>>  0. Back", relx=3, rely=20)
+        back_button.whenPressed = self.back
+
+    def on_submit(self):
+        global search_flag
+        search_flag = True
+        self.editing = False
+
+    def afterEditing(self):
+        global search_flag
+        if search_flag:
+            if not path.exists("book_database.json"):
+                self.add(npyscreen.FixedText, value="Empty catalog", relx=50, rely=3)
+                search_flag = False
+        
+        if search_flag:
+            id = self.id_field.value.strip()
+            first_name = self.first_field.value.strip().lower()
+            last_name = self.last_field.value.strip().lower()
+
+            if all([k=="" for k in [id, first_name, last_name]]):
+                self.add(npyscreen.FixedText, value="Empty ID and paramethers", relx=50, rely=3)
+                self.display()
+            elif not id.isnumeric or not year.isnumeric:
+                self.add(npyscreen.FixedText, value="Incorrect ID/year", relx=50, rely=3)
+                self.display()
+            elif int(id)<0:
+                self.add(npyscreen.FixedText, value="Incorrect ID", relx=50, rely=3)
+                self.display()
+            elif id!="" and any([k!="" for k in [first_name, last_name]]):
+                self.add(npyscreen.FixedText, value="Can search by only ID or only by paramethers", relx=50, rely=3)
+                self.display()
+            if id != "":
+                global user_ids
+                if id in book_ids:
+                    book = load(open("book_database.json"))[id]
+                    self.add(npyscreen.FixedText, value=str(book), relx=50, rely=3)
+                    self.display()
+            else:
+                global first_names; global last_names
+                f_res = first_names[first_name] if first_name!="" and first_name in first_names.keys() else []
+                l_res = last_names[last_name] if last_name!="" and last_name in last_names.keys() else []
+                result = list(set(f_res) & set(l_res))
+
+                if result==[]:
+                    self.add(npyscreen.FixedText, value="Nothing found", relx=50, rely=3)
+                    self.display()
+                else:
+                    counter, books = 1, []
+                    for res in result:
+                        books.append(load(open("book_database.json"))[res])
+                    for book in books:
+                        if counter < 8:
+                            self.add(npyscreen.FixedText, value=str(book), relx=50, rely=2*counter+1)
+                    self.display()
+                    
+
+    def back(self):
+        global search_flag
+        search_flag = False
+        self.parentApp.switchForm("BOOKS")
 
 class ban_user(npyscreen.FormBaseNew):
-    pass
+    def create(self):
+        self.add(npyscreen.FixedText, editable=False, value="===== ID ===============================", relx=3, rely=3)
+        self.id_field = self.add(npyscreen.TitleText,
+                                 name="ID:  >>> ", relx=3, rely=5)
+        submit_button = self.add(npyscreen.ButtonPress,
+                                 name=">>>  1. Ban", relx=3, rely=7)
+        submit_button.whenPressed = self.on_submit
+
+        self.add(npyscreen.FixedText, ediatble=False, value="===== Extras ===========================", relx=3, rely=18)
+        back_button   = self.add(npyscreen.ButtonPress,
+                                 name=">>>  0. Back", relx=3, rely=20)
+        back_button.whenPressed = self.back
+
+    def on_submit(self):
+        global delete_flag
+        delete_flag = True
+        self.editing = False
+    
+    def back(self):
+        global delete_flag
+        delete_flag = False
+        self.parentApp.switchForm("BOOKS")
+
+    def afterEditing(self):
+        global delete_flag
+        if delete_flag:
+            id = self.id_field.value.strip()
+            if not path.exists("user_database.json"):
+                self.add(npyscreen.FixedText, editable=False, value="Empty catalog", relx=3, rely=15)
+                self.display()
+            elif id=="":
+                self.add(npyscreen.FixedText, editable=False, value="Empty ID", relx=3, rely=15)
+                self.display()
+            elif not id.isnumerical() or int(id)<1:
+                self.add(npyscreen.FixedText, editable=False, value="Incorrect ID", relx=3, rely=15)
+                self.display()
+            elif not id in book_ids:
+                self.add(npyscreen.FixedText, editable=False, value="ID doesn't exist", relx=3, rely=15)
+                self.display()
+            else:
+                database.delete("book", id)
+                self.add(npyscreen.FixedText, editable=False, value="Deleted", relx=3, rely=15)
+                self.display()
 
 ## Подготовительная часть
 if path.exists("book_database.json"):
-            genres, authors, titles, years = {}, {}, {}, {}
-            database = load(open("book_database.json", "r"))
-            id_s = list(database.keys())
-            for id in database.keys():
-                genre  = database[id]["genre"].lower()
-                author = database[id]["author"].lower()
-                title  = database[id]["title"].lower()
-                year   = str(database[id]["year"])
+    genres, authors, titles, years = {}, {}, {}, {}
+    database = load(open("book_database.json", "r"))
+    book_ids = list(database.keys())
+    for id in database.keys():
+        genre  = database[id]["genre"].lower()
+        author = database[id]["author"].lower()
+        title  = database[id]["title"].lower()
+        year   = str(database[id]["year"])
 
-                genres[genre]   = genres[genre]+[id]   if genre in genres.keys()   else [id]
-                authors[author] = authors[author]+[id] if author in authors.keys() else [id]
-                titles[title]   = titles[title]+[id]   if title in titles.keys()   else [id]
-                years[year]     = years[year]+[id]     if year in years.keys()     else [id]
+        genres[genre]   = genres[genre]+[id]   if genre in genres.keys()   else [id]
+        authors[author] = authors[author]+[id] if author in authors.keys() else [id]
+        titles[title]   = titles[title]+[id]   if title in titles.keys()   else [id]
+        years[year]     = years[year]+[id]     if year in years.keys()     else [id]
+
+if path.exists("user_database.json"):
+    first_names, last_names = {}, {}
+    database = load(open("user_database.json"))
+    user_ids = list(database.keys())
+    for id in database.keys():
+        first_name = database[id]["first_name"].lower()
+        last_name = database[id]["last_name"].lower()
+
+        first_names[first_name] = first_names[first_name]+id if first_name in first_names.keys() else [id]
+        last_names[last_name] = last_names[last_name]+id if last_name in last_names.keys() else [id]
+    
 
 ## Запуск терминала
 MyTerminal = Terminal()
