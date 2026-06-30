@@ -90,8 +90,6 @@ class signup(npyscreen.FormBaseNew):
                 user_id = id
                 self.add(npyscreen.FixedText, value="Signed up!", relx=50, rely=3)
                 self.display()
-                self.parentApp.switchForm("MENU")
-                
 
     def back(self):
         global signin_flag
@@ -119,6 +117,25 @@ class signin(npyscreen.FormBaseNew):
         signin_flag = True
         self.editing = False
 
+    def afterEditing(self)
+        if signin_flag:
+            login = self.login_field.value.strip()
+            password = self.password_field.value.strip()
+            password = hash(password, mode="encrypt")
+
+            global entry_data; global user_id
+            user_id = 0
+            for id in entry_data.keys():
+                if entry_data[id] = [login, password]:
+                    user_id = id
+                    continue
+            if user_id = 0:
+                self.add(npyscreen.FixedText, value="Incorrect login/password", relx=50, rely=3)
+                self.display()
+            else:
+                self.add(npyscreen.FixedText, value="Signed in!", relx=50, rely=3)
+                self.display()
+                
     def back(self):
         global signin_flag
         signin_flag = False
@@ -208,7 +225,6 @@ class search_book(npyscreen.FormBaseNew):
                             self.add(npyscreen.FixedText, value=str(book), relx=50, rely=2*counter+1)
                     self.display()
                     
-
     def back(self):
         global search_flag
         search_flag = False
@@ -273,7 +289,6 @@ class add_book(npyscreen.FormBaseNew):
                 user.add_book(user_id, id)
                 self.status.value = "Added to your profile"
                 self.display()
-        
 
     def back(self):
         self.parentApp.switchForm("CATALOG")
