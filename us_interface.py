@@ -10,6 +10,7 @@ class Terminal(npyscreen.StandardApp):
         self.addForm("SIGNUP", signup, name="Sign up")
         self.addForm("SIGNIN", signin, name="Sign in")
         self.addForm("MENU", menu, "Library search engine ver.0.1")
+        self.addForm("ADD_BOOK", add_book, "ADDING BOOK")
         self.addForm("CATALOG", search_book, name="BOOKS CATALOG")
 
 class entry(npyscreen.FormBaseNew):
@@ -142,7 +143,29 @@ class signin(npyscreen.FormBaseNew):
         self.parentApp.switchForm("MAIN")
         
 class menu(npyscreen.FormBaseNew):
-    pass
+    def create(self):
+        self.add(npyscreen.FixedText, editable=False, value="===== Options ==========================", relx=3, rely=3)
+        self.add_button    = self.add(npyscreen.ButtonPress,
+                                      name=">>>    1. Add book", relx=3, rely=5)
+        self.add_button.whenPressed = self.to_add
+
+        self.browse_button = self.add(npyscreen.ButtonPress,
+                                      name=">>>    2. Browse catalog", relx=3, rely=7)
+        self.browse_button.whenPressed = self.to_browse
+
+        self.add(npyscreen.FixedText, editable=False, value="===== Extras ===========================", relx=3, rely=18)
+        self.exit_button   = self.add(npyscreen.ButtonPress,
+                                      name=">>>    0. Exit", relx=3, rely=20)
+        self.exit_button.whenPressed = self.exit
+
+    def to_add(self):
+        self.parentApp.switchForm("ADD_BOOK")
+
+    def to_browse(self):
+        self.parentApp.switchForm("CATALOG")
+
+    def exit(self):
+        self.parentApp.swicthForm(None)
 
 class search_book(npyscreen.FormBaseNew):
     def create(self):
